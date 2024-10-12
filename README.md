@@ -32,7 +32,7 @@ The **Crop Certification System** is a decentralized application (dApp) that all
 ## References
 - https://hardhat.org/hardhat-runner/docs/getting-started#overview
 - https://stackoverflow.com/
-- https://github.com/kshitijofficial/coffeDapp(refer this project for installation)
+- https://github.com/kshitijofficial/coffeDapp (refer this project for installation)
 
 
 
