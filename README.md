@@ -29,6 +29,12 @@ The **Crop Certification System** is a decentralized application (dApp) that all
 - Upon successful submission, a QR code is generated along with a link that users can either scan or click. This action redirects them to the certification page, where we retrieve and display the certification details of the crops from the blockchain.
 
 
+## References
+- https://hardhat.org/hardhat-runner/docs/getting-started#overview
+- https://stackoverflow.com/
+- https://github.com/kshitijofficial/coffeDapp(refer this project for installation)
+
+
 
 
 
