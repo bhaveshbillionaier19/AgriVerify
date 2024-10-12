@@ -13,7 +13,7 @@ import { BrowserRouter as Router, Routes, Route, useNavigate, useParams } from '
 
 
 
-const contractAddress = '0xc75419DdCa7c5277402Fa114A5478b85ffF4ad79'; // Replace with your contract address
+const contractAddress = '0xc75419DdCa7c5277402Fa114A5478b85ffF4ad79'; // contract address
 const contractABI =  [
     {
       "anonymous": false,
@@ -151,7 +151,7 @@ const contractABI =  [
       "stateMutability": "nonpayable",
       "type": "function"
     }
-  ];
+  ];    //abi from certification.sol
   
 const MainPage = () => {
   const [isMetaMaskConnected, setIsMetaMaskConnected] = useState(false);
@@ -169,18 +169,8 @@ const MainPage = () => {
         if (accounts.length > 0) {
           setIsMetaMaskConnected(true);
           setUserAddress(accounts[0]);
-         
-          // Check if the page has already reloaded
-        
-        // if (hasReloaded==false) {
-        //   // Set a flag to avoid continuous reloading
-        //   localStorage.setItem('hasReloaded', 'true');
-        //   window.location.reload();
-        //   hasReload=true; // Reload the page once
-        
-        // }
-        
-      } else {
+  
+        } else {
           setIsMetaMaskConnected(false);
           setErrorMessage('Please connect your MetaMask wallet.');
         }
@@ -188,7 +178,7 @@ const MainPage = () => {
         
         
          setIsMetaMaskConnected(false);
-        // setErrorMessage('');
+        
       
       
       }
@@ -214,7 +204,7 @@ const MainPage = () => {
     return () => {
       window.ethereum.removeListener('accountsChanged', handleAccountsChanged);
     };
-  }, []);
+  }, []);  //checking metamask connection as well as reload the page if account change occurs or when person login through meta mask.
 
   const handleSubmitCrop = async () => {
     if (!isMetaMaskConnected) {
@@ -222,28 +212,6 @@ const MainPage = () => {
       return;
     }
 
-  //   try {
-      
-  //     const provider = new ethers.providers.Web3Provider(window.ethereum);
-  //     console.log('Provider initialized:', provider);
-  //     const signer = provider.getSigner();
-  //     const contract = new ethers.Contract(contractAddress, contractABI, signer);
- 
-  //     const tx = await contract.submitCrop(cropType, quantity);
-  //     await tx.wait();
-
-  //     const totalCrops = await contract.getTotalCrops();
-  //     const newCropId = totalCrops - 1;
-  //     console.log(tx)
-  //     // const url = `${window.location.origin}/certification/${newCropId}`;
-  //     // setQrCodeData(url);
-  //     // navigate(`/certification/${newCropId}`);
-  //   } catch (error) {
-  //     console.error('Error submitting crop:', error);
-  //     alert('Failed to submit the crop. Please try again.');
-  //   }
-  // };
-  
   try {
     // Initialize Web3 and MetaMask provider
     if (typeof window.ethereum !== 'undefined') {
@@ -255,34 +223,34 @@ const MainPage = () => {
       const userAddress = accounts[0];
       console.log('Connected account:', userAddress);
 
-      // Get contract instance
+      //contract instance
       const contract = new web3.eth.Contract(contractABI, contractAddress);
       console.log(contract)
 
-      // Submit crop to the contract
-      const bigIntQuantity = BigInt(quantity);
+      //submitting  crop to the contract
+      const bigIntQuantity = BigInt(quantity);// as contract stores the quantity in bigint form
       const tx = await contract.methods.submitCrop(cropType, quantity).send({
           
 
         
-        from: userAddress, // The user's connected MetaMask account
+        from: userAddress, //user's connected MetaMask account
         gas: await contract.methods.submitCrop(cropType, bigIntQuantity).estimateGas({ from: userAddress }), // Estimate gas for the transaction
       });
 
       console.log('Transaction:', tx);
 
-      // Get the total crops from the contract after submission
+      //  the total crops from the contract after submission
       const totalCrops = await contract.methods.getTotalCrops().call();
       console.log(totalCrops)
-      const newCropId = totalCrops - BigInt(1);  // Get the newly added crop ID
+      const newCropId = totalCrops - BigInt(1);  // the newly added crop ID ; also we have to change 1 to bigint so that we can do subtraction 
       
       console.log('New Crop ID:', newCropId);
 
 
-      // If needed, you can set a URL for QR code generation here
+      //  set a URL for QR code generation here
        const url = `${window.location.origin}/certification/${newCropId}`;
        setQrCodeData(url);
-       //navigate(`/certification/${newCropId}`);
+       
     } else {
       console.error('MetaMask not detected. Please install MetaMask.');
     }
@@ -364,16 +332,15 @@ const CertificationPage = () => {
           const web3 = new Web3(window.ethereum);
           const contract = new web3.eth.Contract(contractABI, contractAddress);
           const details = await contract.methods.getCrop(cropId).call();
-  
+
+
+          //reading and storing details of famer crop 
           setCropType(details[0]);
           setquantity(details[1]);
           setfarmer(details[2]);
           setisCertified(details[3]);
   
-          // If the crop is certified, send a push notification
-          // if (details[3]) {
-          //   await sendPushNotification(details[2], cropId);
-          // }
+         
         } else {
           setErrorMessage('MetaMask is not installed.');
         }
@@ -385,74 +352,6 @@ const CertificationPage = () => {
   
     fetchCropDetails();
   }, [cropId]);
-
-  // if (!cropDetails) {
-  //     return <div>Loading...</div>;
-  // }
-
- // const [cropType, quantity, farmer, isCertified] = cropDetails;
-  // let cropType, quantity, farmer, isCertified;
-
-  // Ensure details is not null or undefined and has the expected length
-  // if (Array.isArray(cropDetails) && cropDetails.length === 4) {
-  //     [cropType, quantity, farmer, isCertified] = cropDetails;
-  // } else {
-  //     return <div>Error: Invalid crop details format.</div>;
-  // }
-  
-  // const sendPushNotification = async (farmerAddress, cropId) => {
-  //   try {
-      
-      
-  //     const pushSDKConfig = {
-  //       env: 'staging', // Use 'prod' for production or 'staging' for testing
-  //       blockchain: 'eip155', // Ethereum's chain ID format
-  //       networkId: 1337, // For Ganache local blockchain (adjust for other networks)
-  //     };
-      
-  //     if (!farmerAddress || typeof farmerAddress !== 'string') {
-  //       throw new Error('Invalid farmer address');
-  //     } 
-  //     const formattedFarmerAddress = ethers.utils.getAddress(farmerAddress);
-  //     // Create ethers provider and signer
-  //     const provider = new ethers.providers.Web3Provider(window.ethereum);
-  //     const signer = provider.getSigner();
-      
-  //     console.log('Notification Configuration:', {
-  //       signer: signer,
-  //       farmerAddress: formattedFarmerAddress,
-  //       recipients: `eip155:${pushSDKConfig.networkId}:${formattedFarmerAddress}`,
-  //       channel: `eip155:${pushSDKConfig.networkId}:0xF5724a3B83B73cC3eF695Ebf0a0a4597e5Ae9Bda`,
-  //       env: pushSDKConfig.env,
-  //     });
-
-
-
-
-  //     const response = await PushAPI.payloads.sendNotification({
-  //       signer: signer, // Use the ethers.js signer
-  //       type: 1, // Broadcast notification
-  //       identityType: 2, // Wallet address identity type
-  //       notification: {
-  //         title: 'Crop Certified!',
-  //         body: `Your crop with ID ${cropId} has been certified.`,
-  //       },
-  //       payload: {
-  //         title: 'Crop Certification Complete',
-  //         body: `Your crop with ID ${cropId} has been successfully certified.`,
-  //         cta: '', 
-  //         img: '', 
-  //       },
-  //       recipients: `eip155:${pushSDKConfig.networkId}:${formattedFarmerAddress}`, //to whom i am sendinf
-  //       channel: 'eip155:1337:0xF5724a3B83B73cC3eF695Ebf0a0a4597e5Ae9Bda', // channel
-  //       env: 'pushSDKConfig.env', 
-  //     });
-
-  //     console.log('Notification sent:', response);
-  //   } catch (error) {
-  //     console.error('Error sending notification:', error);
-  //   }
-  // };
 
 
   return (
@@ -472,34 +371,12 @@ const CertificationPage = () => {
     );
 };
 
-// const subscribeToNotifications = () => {
-//     return (
-//       <div>
-//         <h2>Subscribe to Crop Notifications</h2>
-//         <PushNotification
-//           address={userAddress} // Farmer's wallet address
-//           optIn={true} // Opt-in the farmer for notifications
-//         />
-//       </div>
-//     );
-//   };
-
-// const CertificationPage = () => {
-//   const { cropId } = useParams();
-
-//   return (
-//     <div>
-//       <h2>Crop Certification Details for Crop ID: {cropId}</h2>
-//       <p>Crop certification details will be fetched from the blockchain here.</p>
-//     </div>
-//   );
-// };
-
+//to redirect on certification page when someone click on the link
 const App = () => (
   <Router>
     <Routes>
       <Route path="/" element={<MainPage />} />
-      <Route path="/certification/:cropId" element={<CertificationPage />} />
+      <Route path="/certification/:cropId" element={<CertificationPage />} />   
     </Routes>
   </Router>
 );
