@@ -20,7 +20,7 @@ The **Crop Certification System** is a decentralized application (dApp) that all
 - **React Router**: For navigation and routing within the application.
 - **QRCode React**: A React component for generating QR codes.
 
-##How its working:
+## How its working:
 
 - First, we deploy the smart contract by compiling it on the Ganache test network, configuring the hardhat.config.js file to connect to the Ganache network. After deployment, we obtain the contract's JSON file and extract the ABI, which we then integrate into our main application file to enable interaction with the contract's functions.
 
